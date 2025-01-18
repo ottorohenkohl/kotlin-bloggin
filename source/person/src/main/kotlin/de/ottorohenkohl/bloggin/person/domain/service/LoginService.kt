@@ -7,12 +7,10 @@ import de.ottorohenkohl.bloggin.person.extension.nonnullIssuer
 import de.ottorohenkohl.bloggin.person.extension.nonnullSubject
 import de.ottorohenkohl.bloggin.zero.domain.service.transfer.Reference.Content
 import de.ottorohenkohl.bloggin.zero.extension.pipe
-import io.quarkus.oidc.IdToken
 import io.quarkus.security.AuthenticationFailedException
 import jakarta.enterprise.context.ApplicationScoped
 import jakarta.enterprise.context.control.ActivateRequestContext
 import jakarta.inject.Inject
-import jakarta.persistence.Access
 import jakarta.transaction.Transactional
 import jakarta.ws.rs.BadRequestException
 import org.eclipse.microprofile.jwt.JsonWebToken
@@ -21,7 +19,6 @@ import org.eclipse.microprofile.jwt.JsonWebToken
 @ApplicationScoped
 class LoginService {
 
-    @IdToken
     @Inject
     private lateinit var jsonWebToken: JsonWebToken
 

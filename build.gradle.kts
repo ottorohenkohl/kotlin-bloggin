@@ -28,6 +28,7 @@ subprojects {
 
         implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.18.2")
         implementation("io.quarkus:quarkus-arc")
+        implementation("io.quarkus:quarkus-container-image-podman")
         implementation("io.quarkus:quarkus-hibernate-orm")
         implementation("io.quarkus:quarkus-hibernate-validator")
         implementation("io.quarkus:quarkus-jdbc-postgresql")
