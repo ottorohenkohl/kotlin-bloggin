@@ -1,0 +1,23 @@
+stages:
+  - build
+  - test
+  - publish
+
+build-job:
+  stage: build
+  script:
+    - ./gradlew application:build -Dorg.gradle.jvmargs=-Xmx1024m
+  variables:
+    QUARKUS_CONTAINER_IMAGE_NAME: $CI_REGISTRY_IMAGE
+    QUARKUS_CONTAINER_IMAGE_TAG: $CI_JOB_ID
+
+test-job:
+  stage: test
+  script:
+    - ./gradlew application:test -Dorg.gradle.jvmargs=-Xmx1024m
+
+publish-job:
+  stage: publish
+  script:
+    - docker login --username $CI_REGISTRY_USER --password $CI_REGISTRY_PASSWORD
+    - docker push $CI_REGISTRY_IMAGE:$CI_JOB_ID
