@@ -1,7 +1,7 @@
 stages:
   - build
   - test
-  - publish
+  - release
 
 build-job:
   stage: build
@@ -16,8 +16,8 @@ test-job:
   script:
     - ./gradlew application:test -Dorg.gradle.jvmargs=-Xmx1024m
 
-publish-job:
-  stage: publish
+release-job:
+  stage: release
   script:
     - docker login --username $CI_REGISTRY_USER --password $CI_REGISTRY_PASSWORD
     - docker push $CI_REGISTRY_IMAGE:$CI_JOB_ID
