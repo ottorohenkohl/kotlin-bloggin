@@ -1,9 +1,8 @@
 stages:
   - build
-  - test
   - release
 
-build-job:
+build-gradle-project:
   stage: build
   script:
     - ./gradlew application:build -Dorg.gradle.jvmargs=-Xmx1024m --stacktrace
@@ -11,13 +10,8 @@ build-job:
     QUARKUS_CONTAINER_IMAGE_IMAGE: $CI_REGISTRY_IMAGE
     QUARKUS_CONTAINER_IMAGE_TAG: $CI_JOB_ID
 
-test-job:
-  stage: test
-  script:
-    - ./gradlew application:test -Dorg.gradle.jvmargs=-Xmx1024m
-
-release-job:
+push-to-registry:
   stage: release
   script:
-    - docker login --username $CI_REGISTRY_USER --password $CI_REGISTRY_PASSWORD
+    - docker login --username $CI_REGISTRY_USER --password $CI_REGISTRY_PASSWORD $CI_REGISTRY
     - docker push $CI_REGISTRY_IMAGE:$CI_JOB_ID
