@@ -7,8 +7,7 @@ build-gradle-project:
   script:
     - ./gradlew application:build -Dorg.gradle.jvmargs=-Xmx1024m --stacktrace
   variables:
-    QUARKUS_CONTAINER_IMAGE_IMAGE: $CI_REGISTRY_IMAGE
-    QUARKUS_CONTAINER_IMAGE_TAG: $CI_JOB_ID
+    QUARKUS_CONTAINER_IMAGE_IMAGE: $CI_REGISTRY_IMAGE:$CI_JOB_ID
 
 push-to-registry:
   stage: release
