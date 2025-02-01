@@ -65,5 +65,5 @@ subprojects {
     }
 }
 
-group = "de.ottorohenkohl"
+group = "dev.rohenkohl"
 version = "1.0"

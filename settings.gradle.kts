@@ -17,8 +17,8 @@ project(":person").projectDir = file("source/person")
 include(":component")
 project(":component").projectDir = file("source/component")
 
-include(":settings")
-project(":settings").projectDir = file("source/settings")
+include(":configuration")
+project(":configuration").projectDir = file("source/configuration")
 
 include(":zero")
 project(":zero").projectDir = file("source/zero")

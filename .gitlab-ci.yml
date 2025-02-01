@@ -7,10 +7,10 @@ build-gradle-project:
   script:
     - ./gradlew application:build -Dorg.gradle.jvmargs=-Xmx1024m --stacktrace
   variables:
-    QUARKUS_CONTAINER_IMAGE_IMAGE: $CI_REGISTRY_IMAGE:$CI_JOB_ID
+    QUARKUS_CONTAINER_IMAGE_IMAGE: $CI_REGISTRY_IMAGE:$CI_PIPELINE_ID
 
 push-to-registry:
   stage: release
   script:
     - docker login --username $CI_REGISTRY_USER --password $CI_REGISTRY_PASSWORD $CI_REGISTRY
-    - docker push $CI_REGISTRY_IMAGE:$CI_JOB_ID
+    - docker push $CI_REGISTRY_IMAGE:$CI_PIPELINE_ID
