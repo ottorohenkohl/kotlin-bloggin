@@ -8,7 +8,7 @@ build-job:
   script:
     - ./gradlew application:build -Dorg.gradle.jvmargs=-Xmx1024m
   variables:
-    QUARKUS_CONTAINER_IMAGE_NAME: $CI_REGISTRY_IMAGE
+    QUARKUS_CONTAINER_IMAGE_IMAGE: $CI_REGISTRY_IMAGE
     QUARKUS_CONTAINER_IMAGE_TAG: $CI_JOB_ID
 
 test-job:
