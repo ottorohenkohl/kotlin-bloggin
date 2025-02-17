@@ -13,8 +13,8 @@ import org.jboss.resteasy.reactive.RestPath
 import org.jboss.resteasy.reactive.RestResponse
 import java.util.*
 
-@Path("/settings")
-internal class SettingsResource(val configurationService: ConfigurationService) {
+@Path("/configuration")
+internal class ConfigurationResource(val configurationService: ConfigurationService) {
 
     @Path("/")
     @GET
@@ -29,6 +29,6 @@ internal class SettingsResource(val configurationService: ConfigurationService) 
     @Consumes(APPLICATION_JSON)
     @Produces(APPLICATION_JSON)
     fun patch(@RestPath uuid: UUID, @Context uriInfo: UriInfo, configurationDTO: ConfigurationDTO): RestResponse<ConfigurationDTO> {
-        return configurationService.change(Reference(configurationDTO, uuid)) pipe { RestResponse.seeOther(uriInfo.path(it, SettingsResource::class)) }
+        return configurationService.change(Reference(configurationDTO, uuid)) pipe { RestResponse.seeOther(uriInfo.path(it, ConfigurationResource::class)) }
     }
 }

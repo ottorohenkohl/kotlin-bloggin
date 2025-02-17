@@ -5,10 +5,8 @@ import io.quarkus.runtime.Startup
 import jakarta.enterprise.context.ApplicationScoped
 
 @ApplicationScoped
-internal class Bootstrapper {
+internal class Setup {
 
     @Startup
-    fun bootstrap() {
-        Log.info("Starting bloggin application")
-    }
+    fun bootstrap() = Log.info("Starting bloggin application")
 }
