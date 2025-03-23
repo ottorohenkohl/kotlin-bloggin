@@ -5,7 +5,7 @@ stages:
 build-gradle-project:
   stage: build
   script:
-    - ./gradlew application:build -Dorg.gradle.jvmargs=-Xmx1024m --stacktrace
+    - ./gradlew application:build -Dorg.gradle.jvmargs=-Xmx1024m --stacktrace -Dquarkus.container-image.build=true
   variables:
     QUARKUS_CONTAINER_IMAGE_IMAGE: $CI_REGISTRY_IMAGE:$CI_PIPELINE_ID
 
