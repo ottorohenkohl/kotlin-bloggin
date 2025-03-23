@@ -3,33 +3,11 @@ package dev.rohenkohl.bloggin.zero.domain.service.transfer
 import dev.rohenkohl.bloggin.zero.domain.model.Identifiable
 import java.util.*
 
-interface Reference<out I> {
+open class Reference<out T>(val uuid: UUID) {
 
-    val uuid: UUID
-
-    interface Content<out I> : Reference<I> {
-
-        val payload: I
-    }
+    class Content<out T>(val payload: T, uuid: UUID) : Reference<T>(uuid)
 
     companion object {
-        operator fun <I> invoke(payload: I, uuid: UUID): Content<I> where I : Any {
-            return object : Content<I> {
-                override val payload = payload
-                override val uuid = uuid
-            }
-        }
-
-        operator fun <I> invoke(identifiable: I): Reference<I> where I : Identifiable {
-            return object : Reference<I> {
-                override val uuid = identifiable.uuid
-            }
-        }
-
-        operator fun <I> invoke(uuid: UUID): Reference<I> where I : Identifiable {
-            return object : Reference<I> {
-                override val uuid = uuid
-            }
-        }
+        operator fun <I : Identifiable> invoke(identifiable: I) = Reference<I>(identifiable.uuid)
     }
 }

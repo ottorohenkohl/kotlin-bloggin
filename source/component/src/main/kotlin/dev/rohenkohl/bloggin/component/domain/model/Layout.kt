@@ -1,10 +1,25 @@
 package dev.rohenkohl.bloggin.component.domain.model
 
-import dev.rohenkohl.bloggin.person.domain.annotation.value.Role
+import dev.rohenkohl.bloggin.zero.domain.model.constant.Role
 import dev.rohenkohl.bloggin.zero.domain.model.Identifiable
-import jakarta.persistence.Entity
-import jakarta.persistence.ManyToOne
+import jakarta.persistence.*
+import jakarta.persistence.CascadeType.REMOVE
 import jakarta.validation.Valid
+import org.jetbrains.annotations.NotNull
 
 @Entity
-class Layout(@Valid var role: Role, @ManyToOne var widget: Widget) : Identifiable()
+class Layout(
+
+    @field:Valid
+    var role: Role,
+
+    @field:NotNull
+    var visible: Boolean,
+
+    @field:ManyToOne(cascade = [REMOVE])
+    var widget: Widget,
+
+    @field:OneToMany(cascade = [REMOVE])
+    var owning: MutableList<Widget> = mutableListOf(),
+
+) : Identifiable()

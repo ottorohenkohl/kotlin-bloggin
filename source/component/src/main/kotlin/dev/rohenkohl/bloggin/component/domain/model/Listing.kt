@@ -2,19 +2,24 @@ package dev.rohenkohl.bloggin.component.domain.model
 
 import dev.rohenkohl.bloggin.component.domain.model.constant.Alignment
 import dev.rohenkohl.bloggin.component.domain.model.constant.Direction
-import jakarta.persistence.Entity
-import jakarta.persistence.OneToMany
-import jakarta.persistence.OrderColumn
+import jakarta.persistence.*
+import jakarta.persistence.CascadeType.REMOVE
 import jakarta.validation.Valid
 
 @Entity
-class Listing(@Valid var across: Alignment, @Valid var direction: Direction, @Valid var main: Alignment) : Widget() {
+class Listing(
 
-    @OneToMany
-    @OrderColumn
-    val elements = mutableListOf<Widget>()
+    @field:Valid
+    var across: Alignment,
 
-    override fun <L> accept(visitor: Visitor<L>): L {
-        return visitor.visit(this)
-    }
-}
+    @field:Valid
+    var direction: Direction,
+
+    @field:Valid
+    var main: Alignment,
+
+    @field:OneToMany(cascade = [REMOVE])
+    @field:OrderColumn
+    val elements: MutableList<Widget> = mutableListOf()
+
+) : Widget()

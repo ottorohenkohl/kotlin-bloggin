@@ -1,10 +1,8 @@
 package dev.rohenkohl.bloggin.component.domain.service.mapper
 
 import dev.rohenkohl.bloggin.component.domain.model.Header
-import dev.rohenkohl.bloggin.component.domain.repository.HeaderRepository
-import dev.rohenkohl.bloggin.component.domain.service.transfer.HeaderDTO
-import dev.rohenkohl.bloggin.component.extension.nonnullText
-import dev.rohenkohl.bloggin.component.extension.nullableText
+import dev.rohenkohl.bloggin.component.domain.model.repository.HeaderRepository
+import dev.rohenkohl.bloggin.component.domain.service.transfer.HeaderTransfer
 import dev.rohenkohl.bloggin.zero.domain.service.mapper.Exporter
 import dev.rohenkohl.bloggin.zero.domain.service.mapper.Importer
 import dev.rohenkohl.bloggin.zero.domain.service.mapper.Modifier
@@ -15,28 +13,32 @@ import jakarta.enterprise.context.ApplicationScoped
 import jakarta.inject.Inject
 
 @ApplicationScoped
-class HeaderMapper : Exporter<HeaderDTO, Header>, Importer<HeaderDTO, Header>, Modifier<HeaderDTO, Header> {
+class HeaderMapper(): Exporter<HeaderTransfer, Header>, Importer<HeaderTransfer, Header>, Modifier<HeaderTransfer, Header> {
 
-    @Inject
     private lateinit var headerRepository: HeaderRepository
 
-    override fun export(identifiable: Header): Content<HeaderDTO> {
-        val header = HeaderDTO(identifiable.level, identifiable.text.value)
-
-        return Reference(header, identifiable.uuid)
+    @Inject
+    internal constructor(headerRepository: HeaderRepository) : this() {
+        this.headerRepository = headerRepository
     }
 
-    override fun import(dto: HeaderDTO): Header {
-        val header = Header(dto.level.nonnull(), dto.text.nonnullText())
+    override fun export(identifiable: Header): Content<HeaderTransfer> {
+        val headerTransfer = HeaderTransfer(identifiable.level, identifiable.text)
+
+        return Content(headerTransfer, identifiable.uuid)
+    }
+
+    override fun import(transfer: HeaderTransfer): Header {
+        val header = Header(transfer.level.nonnull(), transfer.text.nonnull())
 
         return headerRepository.create(header)
     }
 
-    override fun modify(content: Content<HeaderDTO>): Reference<Header> {
+    override fun modify(content: Content<HeaderTransfer>): Reference<Header> {
         val header = headerRepository.readByUUID(content.uuid)
 
         header.level = content.payload.level ?: header.level
-        header.text = content.payload.text.nullableText() ?: header.text
+        header.text = content.payload.text ?: header.text
 
         return Reference(header)
     }

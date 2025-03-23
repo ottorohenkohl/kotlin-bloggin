@@ -5,9 +5,10 @@ import jakarta.persistence.Entity
 import jakarta.validation.Valid
 
 @Entity
-class Icon(@Valid var primeicon: Primeicon) : Widget() {
+class Icon(
 
-    override fun <W> accept(visitor: Visitor<W>): W {
-        return visitor.visit(this)
-    }
-}
+    @field:Valid
+    var primeicon: Primeicon
+
+
+) : Widget()

@@ -1,6 +1,6 @@
 package dev.rohenkohl.bloggin.component.domain.service.mapper
 
-import dev.rohenkohl.bloggin.component.domain.model.Widget
+import dev.rohenkohl.bloggin.component.domain.model.*
 import dev.rohenkohl.bloggin.component.domain.service.transfer.*
 import dev.rohenkohl.bloggin.zero.domain.service.mapper.Exporter
 import dev.rohenkohl.bloggin.zero.domain.service.mapper.Importer
@@ -8,60 +8,54 @@ import dev.rohenkohl.bloggin.zero.domain.service.mapper.Modifier
 import dev.rohenkohl.bloggin.zero.domain.service.transfer.Reference
 import dev.rohenkohl.bloggin.zero.domain.service.transfer.Reference.Content
 import jakarta.enterprise.context.ApplicationScoped
-import jakarta.inject.Inject
 import jakarta.ws.rs.BadRequestException
+import jakarta.ws.rs.InternalServerErrorException
 
 @ApplicationScoped
-class WidgetMapper : Exporter<WidgetDTO, Widget>, Importer<WidgetDTO, Widget>, Modifier<WidgetDTO, Widget> {
+class WidgetMapper internal constructor(
 
-    @Inject
-    private lateinit var headerMapper: HeaderMapper
+    private val headerMapper: HeaderMapper,
+    private val iconMapper: IconMapper,
+    private val imageMapper: ImageMapper,
+    private val listingMapper: ListingMapper,
+    private val paragraphMapper: ParagraphMapper,
+    private val separatorMapper: SeparatorMapper
 
-    @Inject
-    private lateinit var iconMapper: IconMapper
+) : Exporter<WidgetTransfer, Widget>, Importer<WidgetTransfer, Widget>, Modifier<WidgetTransfer, Widget> {
 
-    @Inject
-    private lateinit var imageMapper: ImageMapper
+    override fun export(identifiable: Widget): Content<WidgetTransfer> {
+        return when (identifiable) {
+            is Header -> headerMapper.export(identifiable)
+            is Icon -> iconMapper.export(identifiable)
+            is Image -> imageMapper.export(identifiable)
+            is Listing -> listingMapper.export(identifiable)
+            is Paragraph -> paragraphMapper.export(identifiable)
+            is Separator -> separatorMapper.export(identifiable)
 
-    @Inject
-    private lateinit var listingMapper: ListingMapper
-
-    @Inject
-    private lateinit var paragraphMapper: ParagraphMapper
-
-    @Inject
-    private lateinit var separatorMapper: SeparatorMapper
-
-    @Inject
-    private lateinit var widgetVisitor: WidgetVisitor
-
-    override fun export(identifiable: Widget): Content<WidgetDTO> {
-        return identifiable.accept(widgetVisitor)
-    }
-
-    override fun import(dto: WidgetDTO): Widget {
-        return when (dto) {
-            is HeaderDTO -> headerMapper.import(dto)
-            is IconDTO -> iconMapper.import(dto)
-            is ImageDTO -> imageMapper.import(dto)
-            is ListingDTO -> listingMapper.import(dto)
-            is ParagraphDTO -> paragraphMapper.import(dto)
-            is SeparatorDTO -> separatorMapper.import(dto)
-
-            is EmptyDTO -> throw BadRequestException("Empty widget cannot be imported")
+            else -> throw InternalServerErrorException("Oops, the image is not registered yet")
         }
     }
 
-    override fun modify(content: Content<WidgetDTO>): Reference<Widget> {
-        return when (val item = content.payload) {
-            is HeaderDTO -> headerMapper.modify(Reference(item, content.uuid))
-            is IconDTO -> iconMapper.modify(Reference(item, content.uuid))
-            is ListingDTO -> listingMapper.modify(Reference(item, content.uuid))
-            is ParagraphDTO -> paragraphMapper.modify(Reference(item, content.uuid))
-            is SeparatorDTO -> separatorMapper.modify(Reference(item, content.uuid))
+    override fun import(transfer: WidgetTransfer): Widget {
+        return when (transfer) {
+            is HeaderTransfer -> headerMapper.import(transfer)
+            is IconTransfer -> iconMapper.import(transfer)
+            is ImageTransfer -> imageMapper.import(transfer)
+            is ListingTransfer -> listingMapper.import(transfer)
+            is ParagraphTransfer -> paragraphMapper.import(transfer)
+            is SeparatorTransfer -> separatorMapper.import(transfer)
+        }
+    }
 
-            is EmptyDTO -> throw BadRequestException("Empty widget cannot be modified")
-            is ImageDTO -> throw BadRequestException("Image widget cannot be modified")
+    override fun modify(content: Content<WidgetTransfer>): Reference<Widget> {
+        return when (val item = content.payload) {
+            is HeaderTransfer -> headerMapper.modify(Content(item, content.uuid))
+            is IconTransfer -> iconMapper.modify(Content(item, content.uuid))
+            is ListingTransfer -> listingMapper.modify(Content(item, content.uuid))
+            is ParagraphTransfer -> paragraphMapper.modify(Content(item, content.uuid))
+            is SeparatorTransfer -> separatorMapper.modify(Content(item, content.uuid))
+
+            is ImageTransfer -> throw BadRequestException("Image widget cannot be modified")
         }
     }
 }

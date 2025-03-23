@@ -5,9 +5,9 @@ import jakarta.persistence.Entity
 import jakarta.validation.Valid
 
 @Entity
-class Separator(@Valid var direction: Direction) : Widget() {
+class Separator(
 
-    override fun <W> accept(visitor: Visitor<W>): W {
-        return visitor.visit(this)
-    }
-}
+    @field:Valid
+    var direction: Direction
+
+) : Widget()

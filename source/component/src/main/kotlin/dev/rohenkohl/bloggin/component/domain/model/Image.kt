@@ -1,14 +1,18 @@
 package dev.rohenkohl.bloggin.component.domain.model
 
-import dev.rohenkohl.bloggin.component.domain.model.value.Data
-import dev.rohenkohl.bloggin.component.domain.model.value.Mimetype
+import dev.rohenkohl.bloggin.component.domain.validator.constraint.Mimetype
 import jakarta.persistence.Entity
-import jakarta.validation.Valid
+import jakarta.persistence.Lob
+import jakarta.validation.constraints.NotEmpty
 
 @Entity
-class Image(@Valid var data: Data, @Valid var mimetype: Mimetype) : Widget() {
+class Image(
 
-    override fun <W> accept(visitor: Visitor<W>): W {
-        return visitor.visit(this)
-    }
-}
+    @field:Mimetype
+    var mimetype: String,
+
+    @field:Lob
+    @field:NotEmpty
+    val data: List<Byte>
+
+) : Widget()

@@ -1,40 +1,50 @@
 package dev.rohenkohl.bloggin.component.domain.service
 
-import dev.rohenkohl.bloggin.component.domain.annotation.Owning
 import dev.rohenkohl.bloggin.component.domain.model.Widget
-import dev.rohenkohl.bloggin.component.domain.repository.WidgetRepository
+import dev.rohenkohl.bloggin.component.domain.model.repository.LayoutRepository
+import dev.rohenkohl.bloggin.component.domain.model.repository.ListingRepository
+import dev.rohenkohl.bloggin.component.domain.model.repository.WidgetRepository
 import dev.rohenkohl.bloggin.component.domain.service.mapper.WidgetMapper
-import dev.rohenkohl.bloggin.component.domain.service.transfer.WidgetDTO
+import dev.rohenkohl.bloggin.component.domain.service.transfer.WidgetTransfer
 import dev.rohenkohl.bloggin.zero.domain.service.transfer.Reference
 import dev.rohenkohl.bloggin.zero.domain.service.transfer.Reference.Content
 import dev.rohenkohl.bloggin.zero.extension.pipe
+import dev.rohenkohl.bloggin.zero.extension.yield
 import jakarta.enterprise.context.RequestScoped
 import jakarta.inject.Inject
 import jakarta.transaction.Transactional
 
 @RequestScoped
-class WidgetService {
+class WidgetService(val widgetMapper: WidgetMapper) {
 
-    @Inject
-    private lateinit var widgetMapper: WidgetMapper
-
-    @Inject
+    private lateinit var layoutRepository: LayoutRepository
+    private lateinit var listingRepository: ListingRepository
     private lateinit var widgetRepository: WidgetRepository
 
-    @Owning
+    @Inject
+    internal constructor(layoutRepository: LayoutRepository, listingRepository: ListingRepository, widgetMapper: WidgetMapper, widgetRepository: WidgetRepository) : this(widgetMapper) {
+        this.layoutRepository = layoutRepository
+        this.listingRepository = listingRepository
+        this.widgetRepository = widgetRepository
+    }
+
     @Transactional
-    fun change(content: Content<WidgetDTO>): Reference<Widget> {
+    fun change(content: Content<WidgetTransfer>): Reference<Widget> {
         return widgetMapper.modify(content)
     }
 
-    @Owning
     @Transactional
-    fun erase(reference: Reference<Widget>): Reference<WidgetDTO> {
-        return widgetRepository.readByUUID(reference.uuid) pipe widgetRepository::delete pipe widgetMapper::export
+    fun erase(reference: Reference<Widget>): Reference<Widget> {
+        val widget = widgetRepository.readByUUID(reference.uuid)
+
+        layoutRepository.readByWidget(widget).owning.remove(widget)
+        listingRepository.readByWidget(widget).elements.remove(widget)
+
+        return widgetRepository.delete(widget) yield reference
     }
 
     @Transactional
-    fun find(reference: Reference<Widget>): Content<WidgetDTO> {
+    fun find(reference: Reference<Widget>): Content<WidgetTransfer> {
         return widgetRepository.readByUUID(reference.uuid) pipe widgetMapper::export
     }
 }

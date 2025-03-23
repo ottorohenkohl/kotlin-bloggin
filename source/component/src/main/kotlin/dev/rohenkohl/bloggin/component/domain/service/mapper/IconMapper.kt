@@ -1,8 +1,8 @@
 package dev.rohenkohl.bloggin.component.domain.service.mapper
 
 import dev.rohenkohl.bloggin.component.domain.model.Icon
-import dev.rohenkohl.bloggin.component.domain.repository.IconRepository
-import dev.rohenkohl.bloggin.component.domain.service.transfer.IconDTO
+import dev.rohenkohl.bloggin.component.domain.model.repository.IconRepository
+import dev.rohenkohl.bloggin.component.domain.service.transfer.IconTransfer
 import dev.rohenkohl.bloggin.zero.domain.service.mapper.Exporter
 import dev.rohenkohl.bloggin.zero.domain.service.mapper.Importer
 import dev.rohenkohl.bloggin.zero.domain.service.mapper.Modifier
@@ -13,24 +13,28 @@ import jakarta.enterprise.context.ApplicationScoped
 import jakarta.inject.Inject
 
 @ApplicationScoped
-class IconMapper : Exporter<IconDTO, Icon>, Importer<IconDTO, Icon>, Modifier<IconDTO, Icon> {
+class IconMapper(): Exporter<IconTransfer, Icon>, Importer<IconTransfer, Icon>, Modifier<IconTransfer, Icon> {
 
-    @Inject
     private lateinit var iconRepository: IconRepository
 
-    override fun export(identifiable: Icon): Content<IconDTO> {
-        val icon = IconDTO(identifiable.primeicon)
-
-        return Reference(icon, identifiable.uuid)
+    @Inject
+    internal constructor(iconRepository: IconRepository) : this() {
+        this.iconRepository = iconRepository
     }
 
-    override fun import(dto: IconDTO): Icon {
-        val icon = Icon(dto.primeicon.nonnull())
+    override fun export(identifiable: Icon): Content<IconTransfer> {
+        val iconTransfer = IconTransfer(identifiable.primeicon)
+
+        return Content(iconTransfer, identifiable.uuid)
+    }
+
+    override fun import(transfer: IconTransfer): Icon {
+        val icon = Icon(transfer.primeicon.nonnull())
 
         return iconRepository.create(icon)
     }
 
-    override fun modify(content: Content<IconDTO>): Reference<Icon> {
+    override fun modify(content: Content<IconTransfer>): Reference<Icon> {
         val icon = iconRepository.readByUUID(content.uuid)
 
         icon.primeicon = content.payload.primeicon ?: icon.primeicon

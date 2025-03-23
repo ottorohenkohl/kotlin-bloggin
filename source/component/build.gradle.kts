@@ -1,4 +1,4 @@
 dependencies {
-    implementation(project(":person"))
+    implementation(project(":user"))
     implementation(project(":zero"))
 }

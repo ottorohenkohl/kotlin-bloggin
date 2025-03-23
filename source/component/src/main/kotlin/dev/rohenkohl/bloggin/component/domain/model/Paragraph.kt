@@ -1,14 +1,17 @@
 package dev.rohenkohl.bloggin.component.domain.model
 
-import dev.rohenkohl.bloggin.component.domain.model.constant.Size
-import dev.rohenkohl.bloggin.component.domain.model.value.Text
+import dev.rohenkohl.bloggin.component.domain.model.constant.Fontsize
+import dev.rohenkohl.bloggin.zero.domain.validator.constraint.Text
 import jakarta.persistence.Entity
 import jakarta.validation.Valid
 
 @Entity
-class Paragraph(@Valid var size: Size, @Valid var text: Text) : Widget() {
+class Paragraph(
 
-    override fun <W> accept(visitor: Visitor<W>): W {
-        return visitor.visit(this)
-    }
-}
+    @field:Valid
+    var fontsize: Fontsize,
+
+    @field:Text
+    var text: String
+
+) : Widget()

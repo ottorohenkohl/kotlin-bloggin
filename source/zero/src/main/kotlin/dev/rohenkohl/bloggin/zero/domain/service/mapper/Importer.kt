@@ -2,7 +2,7 @@ package dev.rohenkohl.bloggin.zero.domain.service.mapper
 
 import dev.rohenkohl.bloggin.zero.domain.model.Identifiable
 
-interface Importer<D, I : Identifiable> {
+interface Importer<T, I : Identifiable> {
 
-    fun import(dto: D): I
+    fun import(transfer: T): I
 }

@@ -27,6 +27,7 @@ subprojects {
         kapt("org.hibernate.orm:hibernate-jpamodelgen:6.6.3.Final")
 
         implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.18.2")
+        implementation("net.datafaker:datafaker:2.4.2")
         implementation("io.quarkus:quarkus-arc")
         implementation("io.quarkus:quarkus-container-image-docker")
         implementation("io.quarkus:quarkus-hibernate-orm")
@@ -38,12 +39,18 @@ subprojects {
         implementation("io.quarkus:quarkus-rest-jackson")
         implementation("io.quarkus:quarkus-smallrye-openapi")
         implementation("io.quarkus:quarkus-smallrye-jwt")
+        implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:2.0.21")
+
+        testImplementation("io.quarkus:quarkus-junit5")
+        testImplementation("io.quarkus:quarkus-test-keycloak-server")
+        testImplementation("io.rest-assured:rest-assured")
     }
 
     kotlin {
         compilerOptions {
             jvmTarget = JvmTarget.JVM_21
             freeCompilerArgs = listOf("-Xjvm-default=all")
+            optIn = listOf("kotlin.io.encoding.ExperimentalEncodingApi")
         }
     }
 
@@ -54,6 +61,8 @@ subprojects {
 
     allOpen {
         annotation("jakarta.enterprise.context.ApplicationScoped")
+        annotation("jakarta.enterprise.context.ApplicationScoped")
+        annotation("jakarta.interceptor.Interceptor")
         annotation("jakarta.persistence.Entity")
         annotation("jakarta.ws.rs.Path")
     }

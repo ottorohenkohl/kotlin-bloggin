@@ -1,12 +1,13 @@
 package dev.rohenkohl.bloggin.component.domain.service
 
-import dev.rohenkohl.bloggin.component.domain.annotation.Owning
 import dev.rohenkohl.bloggin.component.domain.model.Listing
 import dev.rohenkohl.bloggin.component.domain.model.Widget
-import dev.rohenkohl.bloggin.component.domain.repository.ListingRepository
+import dev.rohenkohl.bloggin.component.domain.model.repository.LayoutRepository
+import dev.rohenkohl.bloggin.component.domain.model.repository.ListingRepository
 import dev.rohenkohl.bloggin.component.domain.service.mapper.WidgetMapper
-import dev.rohenkohl.bloggin.component.domain.service.transfer.WidgetDTO
+import dev.rohenkohl.bloggin.component.domain.service.transfer.WidgetTransfer
 import dev.rohenkohl.bloggin.zero.domain.service.transfer.Reference
+import dev.rohenkohl.bloggin.zero.extension.pipe
 import dev.rohenkohl.bloggin.zero.extension.yield
 import jakarta.enterprise.context.RequestScoped
 import jakarta.inject.Inject
@@ -15,24 +16,27 @@ import jakarta.ws.rs.NotFoundException
 import java.util.*
 
 @RequestScoped
-class ListingService {
+class ListingService(private val widgetMapper: WidgetMapper) {
 
-    @Inject
+    private lateinit var layoutRepository: LayoutRepository
     private lateinit var listingRepository: ListingRepository
 
     @Inject
-    private lateinit var widgetMapper: WidgetMapper
+    internal constructor(layoutRepository: LayoutRepository, listingRepository: ListingRepository, widgetMapper: WidgetMapper) : this(widgetMapper) {
+        this.layoutRepository = layoutRepository
+        this.listingRepository = listingRepository
+    }
 
-    @Owning
     @Transactional
-    fun store(reference: Reference<Listing>, widgetDTO: WidgetDTO): Reference<Widget> {
+    fun store(reference: Reference<Listing>, widgetTransfer: WidgetTransfer): Reference<Widget> {
         val listing = listingRepository.readByUUID(reference.uuid)
-        val widget = widgetMapper.import(widgetDTO)
+        val widget = widgetMapper.import(widgetTransfer)
+
+        layoutRepository.readByWidget(listing).owning.add(widget)
 
         return listing.elements.add(widget) yield Reference(widget)
     }
 
-    @Owning
     @Transactional
     fun swap(reference: Reference<Listing>, first: Reference<Widget>, second: Reference<Widget>): Reference<Listing> {
         val listing = listingRepository.readByUUID(reference.uuid)

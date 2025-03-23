@@ -1,44 +1,19 @@
 package dev.rohenkohl.bloggin.zero.domain.service.transfer
 
 import dev.rohenkohl.bloggin.zero.domain.service.transfer.Reference.Content
-import dev.rohenkohl.bloggin.zero.extension.NumberNegativeException
-import dev.rohenkohl.bloggin.zero.extension.SizeNotPositiveException
 import org.hibernate.query.Page
 
-interface Range<I> {
+open class Range<I>(number: Int, size: Int) {
 
-    val number: Int
-    val size: Int
+    private val number = if (number >= 0) number else 10
+    private val size = if (size >= 1) size else 10
 
-    fun fill(payload: List<Content<I>>): Excerpt<I> = Range(number, payload.size, payload)
+    fun fill(payload: List<Content<I>>): Excerpt<I> = Excerpt(payload, number, payload.size)
     fun page(): Page = Page.page(size, number)
 
-    interface Excerpt<I> : Range<I> {
-
-        val payloads: List<Content<I>>
-    }
+    class Excerpt<I>(val payload: List<Content<I>>, number: Int, size: Int) : Range<I>(number, size)
 
     companion object {
-        operator fun <I> invoke(number: Int, size: Int): Range<I> {
-            return object : Range<I> {
-                override val number = if (number >= 0) number else throw NumberNegativeException()
-                override val size = if (size > 0) size else throw SizeNotPositiveException()
-            }
-        }
-
-        operator fun <I> invoke(page: Page): Range<I> {
-            return object : Range<I> {
-                override val number by page::number
-                override val size by page::size
-            }
-        }
-
-        private operator fun <I> invoke(number: Int, size: Int, payloads: List<Content<I>>): Excerpt<I> {
-            return object : Excerpt<I> {
-                override val number = number
-                override val size = size
-                override val payloads = payloads
-            }
-        }
+        operator fun <I> invoke(page: Page) = Range<I>(page.number, page.size)
     }
 }

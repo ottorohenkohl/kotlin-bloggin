@@ -1,7 +1,7 @@
 dependencies {
     implementation(project(":component"))
-    implementation(project(":configuration"))
-    implementation(project(":person"))
+    implementation(project(":page"))
+    implementation(project(":user"))
     implementation(project(":zero"))
 }
 

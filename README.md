@@ -15,15 +15,15 @@ REST-Implementationen bleiben.
 
 ### Architekturüberblick
 
-Die Architektur ist stark modularisiert und durch eine klare Abhängigkeitshierarchie strukturiert. Für die Gleiderung
-werden Gradle-Module nach Features verwendet. Dafür wird vor Allem auf Kotlins internen Sichtbarkeitsmodifizierer
+Die Architektur ist stark modularisiert und durch eine klare Abhängigkeitshierarchie strukturiert. Für die Gliederung
+werden Gradle-Module nach Features verwendet. Dafür wird vor allem auf Kotlins internen Sichtbarkeitsmodifizierer
 gesetzt.
 
 ## 2. Installation/Einrichtung
 
 ### Grundlegende Voraussetzungen
 
-Um das Projekt lokal auszuführen, wird ein PostgreSQL-Datenbankserver benötigt, der standardmäßig auf `localhost:5432`
+Um das Projekt lokal auszuführen, wird ein PostgresSQL-Datenbankserver benötigt, der standardmäßig auf `localhost:5432`
 unter folgenden Einstellungen erreichbar sein sollte:
 
 - **Datenbankname**: `quarkus`
@@ -78,6 +78,6 @@ GitLab-Releases einsehbar und für verschiedene Umgebungen bereitgestellt.
 
 ## 4. Weiterführende Links
 
-- [Quarkus Dokumentation](https://https://quarkus.io/guides/) – Detaillierte Anleitungen und Konfigurationsoptionen für
+- [Quarkus Dokumentation](https://https://quarkus.io/guides/) – detaillierte Anleitungen und Konfigurationsoptionen für
   Quarkus.
 - [Hibernate](https://hibernate.org/) – Details zum ORM und Validierungsframework.

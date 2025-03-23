@@ -1,8 +1,8 @@
 package dev.rohenkohl.bloggin.component.domain.service.mapper
 
 import dev.rohenkohl.bloggin.component.domain.model.Listing
-import dev.rohenkohl.bloggin.component.domain.repository.ListingRepository
-import dev.rohenkohl.bloggin.component.domain.service.transfer.ListingDTO
+import dev.rohenkohl.bloggin.component.domain.model.repository.ListingRepository
+import dev.rohenkohl.bloggin.component.domain.service.transfer.ListingTransfer
 import dev.rohenkohl.bloggin.zero.domain.service.mapper.Exporter
 import dev.rohenkohl.bloggin.zero.domain.service.mapper.Importer
 import dev.rohenkohl.bloggin.zero.domain.service.mapper.Modifier
@@ -13,28 +13,29 @@ import jakarta.enterprise.context.ApplicationScoped
 import jakarta.inject.Inject
 
 @ApplicationScoped
-class ListingMapper : Exporter<ListingDTO, Listing>, Importer<ListingDTO, Listing>, Modifier<ListingDTO, Listing> {
+class ListingMapper(val widgetMapper: WidgetMapper): Exporter<ListingTransfer, Listing>, Importer<ListingTransfer, Listing>, Modifier<ListingTransfer, Listing> {
 
-    @Inject
-    private lateinit var widgetMapper: WidgetMapper
-
-    @Inject
     private lateinit var listingRepository: ListingRepository
 
-    override fun export(identifiable: Listing): Content<ListingDTO> {
-        val widgetDTOs = identifiable.elements.map(widgetMapper::export)
-        val listingDTO = ListingDTO(identifiable.across, identifiable.direction, widgetDTOs, identifiable.main)
-
-        return Reference(listingDTO, identifiable.uuid)
+    @Inject
+    internal constructor(listingRepository: ListingRepository, widgetMapper: WidgetMapper) : this(widgetMapper) {
+        this.listingRepository = listingRepository
     }
 
-    override fun import(dto: ListingDTO): Listing {
-        val listing = Listing(dto.across.nonnull(), dto.direction.nonnull(), dto.main.nonnull())
+    override fun export(identifiable: Listing): Content<ListingTransfer> {
+        val widgetReferences = identifiable.elements.map(widgetMapper::export)
+        val listingTransfer = ListingTransfer(identifiable.across, identifiable.direction, identifiable.main, widgetReferences)
+
+        return Content(listingTransfer, identifiable.uuid)
+    }
+
+    override fun import(transfer: ListingTransfer): Listing {
+        val listing = Listing(transfer.across.nonnull(), transfer.direction.nonnull(), transfer.main.nonnull())
 
         return listingRepository.create(listing)
     }
 
-    override fun modify(content: Content<ListingDTO>): Reference<Listing> {
+    override fun modify(content: Content<ListingTransfer>): Reference<Listing> {
         val listing = listingRepository.readByUUID(content.uuid)
 
         listing.direction = content.payload.direction ?: listing.direction
