@@ -12,19 +12,19 @@ import dev.rohenkohl.bloggin.zero.domain.service.transfer.Reference
 import dev.rohenkohl.bloggin.zero.domain.service.transfer.Reference.Content
 import dev.rohenkohl.bloggin.zero.extension.pipe
 import dev.rohenkohl.bloggin.zero.extension.yield
-import jakarta.enterprise.context.Dependent
+import jakarta.enterprise.context.ApplicationScoped
 import jakarta.inject.Inject
 import jakarta.transaction.Transactional
 
-@Dependent
-class SiteService {
+@ApplicationScoped
+class SiteService (val previewMapper: PreviewMapper, val siteMapper: SiteMapper) {
+
+    private lateinit var siteRepository: SiteRepository
 
     @Inject
-    internal lateinit var siteMapper: SiteMapper
-    @Inject
-    internal lateinit var siteRepository: SiteRepository
-    @Inject
-    internal lateinit var previewMapper: PreviewMapper
+    internal constructor(previewMapper: PreviewMapper, siteMapper: SiteMapper, siteRepository: SiteRepository) : this(previewMapper, siteMapper) {
+        this.siteRepository = siteRepository
+    }
 
     @Transactional
     fun change(content: Content<SiteTransfer>): Reference<Site> {
